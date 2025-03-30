@@ -1,0 +1,131 @@
+#include <iostream>
+#include <cstring>
+#include <limits>
+#include <cctype>
+
+using namespace std;
+
+class Book {
+private:
+    char id[20], isbn[20], title[100], author[100], edition[20], publication[100], category[20];
+public:
+    void setBookDetails(const char* bid, const char* bisbn, const char* btitle, const char* bauthor,
+                        const char* bedition, const char* bpublication, const char* bcategory) {
+        strcpy(id, bid);
+        strcpy(isbn, bisbn);
+        strcpy(title, btitle);
+        strcpy(author, bauthor);
+        strcpy(edition, bedition);
+        strcpy(publication, bpublication);
+        strcpy(category, bcategory);
+    }
+    void getBookDetails() {
+        cout << "ID: " << id << "\nISBN: " << isbn << "\nTitle: " << title << "\nAuthor: " << author
+             << "\nEdition: " << edition << "\nPublication: " << publication << "\nCategory: " << category << "\n";
+    }
+    const char* getID() { return id; }
+    const char* getCategory() { return category; }
+    void editBook(const char* bisbn, const char* btitle, const char* bauthor,
+                  const char* bedition, const char* bpublication) {
+        strcpy(isbn, bisbn);
+        strcpy(title, btitle);
+        strcpy(author, bauthor);
+        strcpy(edition, bedition);
+        strcpy(publication, bpublication);
+    }
+};
+
+class Library {
+private:
+    Book books[100];
+    int bookCount;
+public:
+    Library() { bookCount = 0; }
+
+    bool isDuplicateID(const char* bid) {
+        for (int i = 0; i < bookCount; i++) {
+            if (strcmp(books[i].getID(), bid) == 0) return true;
+        }
+        return false;
+    }
+
+    void addBook() {
+        char bid[20], bisbn[20], btitle[100], bauthor[100], bedition[20], bpublication[100], bcategory[20];
+        
+        cout << "Enter Category (Fiction/Non-fiction): ";
+        cin >> bcategory;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        
+        while (true) {
+            cout << "Enter Book ID: ";
+            cin >> bid;
+            if (isDuplicateID(bid)) {
+                cout << "Duplicate ID! Please enter another ID.\n";
+            } else {
+                break;
+            }
+        }
+        
+        cout << "Enter ISBN: "; cin >> bisbn;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Enter Title: "; cin.getline(btitle, 100);
+        cout << "Enter Author: "; cin.getline(bauthor, 100);
+        cout << "Enter Edition: "; cin >> bedition;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "Enter Publication: "; cin.getline(bpublication, 100);
+        
+        books[bookCount].setBookDetails(bid, bisbn, btitle, bauthor, bedition, bpublication, bcategory);
+        bookCount++;
+        cout << "Book added successfully!\n";
+    }
+
+    void deleteBook() {
+        char bid[20];
+        cout << "Enter Book ID to delete: "; cin >> bid;
+        for (int i = 0; i < bookCount; i++) {
+            if (strcmp(books[i].getID(), bid) == 0) {
+                for (int j = i; j < bookCount - 1; j++) {
+                    books[j] = books[j + 1];
+                }
+                bookCount--;
+                cout << "Book deleted successfully!\n";
+                return;
+            }
+        }
+        cout << "Book not found!\n";
+    }
+
+    void viewAllBooks() {
+        if (bookCount == 0) {
+            cout << "No books available!\n";
+            return;
+        }
+        for (int i = 0; i < bookCount; i++) {
+            books[i].getBookDetails();
+            cout << "--------------------------\n";
+        }
+    }
+};
+
+int main() {
+    Library library;
+    int choice;
+    do {
+        cout << "1 - Add Book\n2 - Delete Book\n3 - View All Books\n4 - Exit\nEnter choice: ";
+        while (!(cin >> choice)) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid input! Please enter a number: ";
+        }
+        
+        switch (choice) {
+            case 1: library.addBook(); break;
+            case 2: library.deleteBook(); break;
+            case 3: library.viewAllBooks(); break;
+            case 4: cout << "Exiting...\n"; break;
+            default: cout << "Invalid choice!\n";
+        }
+    } while (choice != 4);
+    return 0;
+}
+
